@@ -51,7 +51,7 @@ module Puppet::Parser::Functions
             quote = true
             regex = %r{^[a-z][a-z0-9\.\-_ \$]{0,126}$}i
           when 'acl', 'messages', 'type', 'string_noquote', 'schedule_run_command'
-            raise 'Value need to be an string' unless value.is_a?(String)
+            raise 'Value need to be an string' unless value.is_a?(String) or value.is_a?(Array)
           # type md5password is missleading, it is an plain password and not md5 hashed
           when 'audit_command', 'runscript_short', 'autopassword', 'md5password', 'directory', 'string', 'strname', 'device', 'plugin_names'
             # array
@@ -126,8 +126,7 @@ module Puppet::Parser::Functions
             final_settings.push "#{indent}}"
           elsif value.is_a?(Array)
             value.each do |item|
-              type_n = 'string_noquote'
-              type_n = "#{type_n}_list" if item.is_a?(Array)
+              type_n = "#{type}_list" if item.is_a?(Array)
               # use same type again:
               type_n = type if item.is_a?(Hash)
               final_settings.push function_bareos_settings([[item, nil, type_n, false, "#{indent}  "]])
