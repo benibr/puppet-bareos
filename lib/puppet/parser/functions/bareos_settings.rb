@@ -18,7 +18,7 @@ module Puppet::Parser::Functions
         raise 'Name of directive config key is invalid' unless directive =~ %r{^[a-zA-Z0-9 ]+$}
 
         # check array if allowed
-        values = if (%w[acl runscript].include?(dirty_type) || dirty_type =~ %r{[_-]list$}) && value_setting.is_a?(Array)
+        values = if (%w[include_exclude_item acl runscript].include?(dirty_type) || dirty_type =~ %r{[_-]list$}) && value_setting.is_a?(Array)
                    value_setting
                  else
                    [value_setting]
@@ -121,6 +121,8 @@ module Puppet::Parser::Functions
               final_settings.push function_bareos_settings([[v, k, type_n, false, "#{indent}  "]])
             end
             final_settings.push "#{indent}}"
+#          else if value.is_a?(Array)
+#
           else
             if quote
               # value = value.gsub(/(")/, '\"')
