@@ -72,8 +72,10 @@ module Puppet::Parser::Functions
           when 'addresses'
             hash_separator = ' = '
             raise 'Please specify as Hash' unless value.is_a?(Hash)
-          when 'include_exclude_item', 'runscript', 'hash'
+          when 'runscript', 'hash'
             raise 'Please specify as Hash' unless value.is_a?(Hash)
+          when 'include_exclude_item'
+            raise 'Please specify as Array' unless value.is_a?(Array)
           when 'backup_level'
             value_in_array = %w[full incremental differential virtualfull initcatalog catalog volumetocatalog disktocatalog]
           when 'io_direction'
