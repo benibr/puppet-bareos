@@ -115,31 +115,29 @@ module Puppet::Parser::Functions
           end
 
           if value.is_a?(Hash)
-            #if directive == nil 
-            #  foo = final_settings.push function_bareos_settings([['foo', nil, type, false, indent]])
-            #else
             final_settings.push "#{indent}#{directive}#{hash_separator}{" if directive
             value.each do |k, v|
               type_n = 'string_noquote'
               type_n = "#{type_n}_list" if v.is_a?(Array)
               # use same type again:
               type_n = type if v.is_a?(Hash)
-              directive_n = k
-              directive_n = nil unless directive
-              final_settings.push function_bareos_settings([[v, directive_n, type_n, false, "#{indent}  "]])
+              if v.is_a?(Array)
+                final_settings.push function_bareos_settings([[v, nil, type, false, indent]])
+              else
+                final_settings.push function_bareos_settings([[v, k, type_n, false, "#{indent}  "]])
+              end
             end
             final_settings.push "#{indent}}" if directive
-            #end
-          elsif value.is_a?(Array)
-            final_settings.push "#{indent}#{directive}#{hash_separator}{"
-            value.each do |item|
-              #type_n = type
-              #type_n = "#{type}_list" if item.is_a?(Array)
-              # use same type again:
-              #type_n = type if item.is_a?(Hash)
-              final_settings.push function_bareos_settings([[item, nil, type, false, indent]])
-            end
-            final_settings.push "#{indent}}"
+          #elsif value.is_a?(Array)
+          #  final_settings.push "#{indent}#{directive}#{hash_separator}{"
+          #  value.each do |item|
+          #    #type_n = type
+          #    #type_n = "#{type}_list" if item.is_a?(Array)
+          #    # use same type again:
+          #    #type_n = type if item.is_a?(Hash)
+          #    final_settings.push function_bareos_settings([[item, nil, type, false, indent]])
+          #  end
+          #  final_settings.push "#{indent}}"
           else
             if quote
               # value = value.gsub(/(")/, '\"')
