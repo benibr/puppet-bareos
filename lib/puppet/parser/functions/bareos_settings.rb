@@ -18,7 +18,7 @@ module Puppet::Parser::Functions
         raise 'Name of directive config key is invalid' unless directive =~ %r{^[a-zA-Z0-9 ]+$} or directive == nil
 
         # check array if allowed
-        ##values = if (%w[include_exclude_item_list acl runscript].include?(dirty_type) || dirty_type =~ %r{[_-]list$}) && value_setting.is_a?(Array)
+        #values = if (%w[include_exclude_item acl runscript].include?(dirty_type) || dirty_type =~ %r{[_-]list$}) && value_setting.is_a?(Array)
         values = if (%w[acl runscript].include?(dirty_type) || dirty_type =~ %r{[_-]list$}) && value_setting.is_a?(Array)
                    value_setting
                  else
@@ -51,7 +51,7 @@ module Puppet::Parser::Functions
             quote = true
             regex = %r{^[a-z][a-z0-9\.\-_ \$]{0,126}$}i
           when 'acl', 'messages', 'type', 'string_noquote', 'schedule_run_command'
-            raise 'Value need to be an string' unless value.is_a?(String) or value.is_a?(Array)
+            raise 'Value need to be an string ----------' unless value.is_a?(Array) or value.is_a?(String) or value.is_a?(Hash)
           # type md5password is missleading, it is an plain password and not md5 hashed
           when 'audit_command', 'runscript_short', 'autopassword', 'md5password', 'directory', 'string', 'strname', 'device', 'plugin_names'
             # array
@@ -115,22 +115,31 @@ module Puppet::Parser::Functions
           end
 
           if value.is_a?(Hash)
-            final_settings.push "#{indent}#{directive}#{hash_separator}{"
+            #if directive == nil 
+            #  foo = final_settings.push function_bareos_settings([['foo', nil, type, false, indent]])
+            #else
+            final_settings.push "#{indent}#{directive}#{hash_separator}{" if directive
             value.each do |k, v|
               type_n = 'string_noquote'
               type_n = "#{type_n}_list" if v.is_a?(Array)
               # use same type again:
               type_n = type if v.is_a?(Hash)
-              final_settings.push function_bareos_settings([[v, k, type_n, false, "#{indent}  "]])
+              directive_n = k
+              directive_n = nil unless directive
+              final_settings.push function_bareos_settings([[v, directive_n, type_n, false, "#{indent}  "]])
+            end
+            final_settings.push "#{indent}}" if directive
+            #end
+          elsif value.is_a?(Array)
+            final_settings.push "#{indent}#{directive}#{hash_separator}{"
+            value.each do |item|
+              #type_n = type
+              #type_n = "#{type}_list" if item.is_a?(Array)
+              # use same type again:
+              #type_n = type if item.is_a?(Hash)
+              final_settings.push function_bareos_settings([[item, nil, type, false, indent]])
             end
             final_settings.push "#{indent}}"
-          elsif value.is_a?(Array)
-            value.each do |item|
-              type_n = "#{type}_list" if item.is_a?(Array)
-              # use same type again:
-              type_n = type if item.is_a?(Hash)
-              final_settings.push function_bareos_settings([[item, nil, type_n, false, "#{indent}  "]])
-            end
           else
             if quote
               # value = value.gsub(/(")/, '\"')
