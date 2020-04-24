@@ -18,7 +18,8 @@ module Puppet::Parser::Functions
         raise 'Name of directive config key is invalid' unless directive =~ %r{^[a-zA-Z0-9 ]+$}
 
         # check array if allowed
-        values = if (%w[include_exclude_item_list acl runscript].include?(dirty_type) || dirty_type =~ %r{[_-]list$}) && value_setting.is_a?(Array)
+        ##values = if (%w[include_exclude_item_list acl runscript].include?(dirty_type) || dirty_type =~ %r{[_-]list$}) && value_setting.is_a?(Array)
+        values = if (%w[acl runscript].include?(dirty_type) || dirty_type =~ %r{[_-]list$}) && value_setting.is_a?(Array)
                    value_setting
                  else
                    [value_setting]
@@ -75,7 +76,7 @@ module Puppet::Parser::Functions
           when 'runscript', 'hash'
             raise 'Please specify as Hash' unless value.is_a?(Hash)
           when 'include_exclude_item'
-            raise 'Please specify as Array' unless value.is_a?(Array)
+            raise 'Please specify an include_exclude_item' unless value.is_a?(Array) or value.is_a?(Hash)
           when 'backup_level'
             value_in_array = %w[full incremental differential virtualfull initcatalog catalog volumetocatalog disktocatalog]
           when 'io_direction'
@@ -123,8 +124,6 @@ module Puppet::Parser::Functions
               final_settings.push function_bareos_settings([[v, k, type_n, false, "#{indent}  "]])
             end
             final_settings.push "#{indent}}"
-#          else if value.is_a?(Array)
-#
           else
             if quote
               # value = value.gsub(/(")/, '\"')
