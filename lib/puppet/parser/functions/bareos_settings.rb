@@ -124,6 +124,16 @@ module Puppet::Parser::Functions
               final_settings.push function_bareos_settings([[v, k, type_n, false, "#{indent}  "]])
             end
             final_settings.push "#{indent}}"
+          elsif value.is_a?(Array)
+            final_settings.push "#{indent}#{directive}#{hash_separator}{"
+            value.each do |k, v|
+              type_n = 'string_noquote'
+              type_n = "#{type_n}_list" if v.is_a?(Array)
+              # use same type again:
+              type_n = type if v.is_a?(Hash)
+              final_settings.push function_bareos_settings([[v, k, type_n, false, "#{indent}  "]])
+            end
+            final_settings.push "#{indent}}"
           else
             if quote
               # value = value.gsub(/(")/, '\"')
