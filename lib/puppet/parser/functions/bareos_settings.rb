@@ -114,7 +114,7 @@ module Puppet::Parser::Functions
             raise "Value '#{value}' does not match regex #{regex}" unless value =~ Regexp.compile(regex)
           end
 
-          if value.is_a?(Hash)
+          if value.is_a?(Hash) or value.is_a?(Array)
             final_settings.push "#{indent}#{directive}#{hash_separator}{" if directive
             value.each do |k, v|
               type_n = 'string_noquote'
