@@ -127,10 +127,10 @@ module Puppet::Parser::Functions
           elsif value.is_a?(Array)
             value.each do |item|
               type_n = 'string_noquote'
-              type_n = "#{type_n}_list" if v.is_a?(Array)
+              type_n = "#{type_n}_list" if item.is_a?(Array)
               # use same type again:
-              type_n = type if v.is_a?(Hash)
-              final_settings.push function_bareos_settings([[v, k, type_n, false, "#{indent}  "]])
+              type_n = type if item.is_a?(Hash)
+              final_settings.push function_bareos_settings([[item, nil, type_n, false, "#{indent}  "]])
             end
           else
             if quote
