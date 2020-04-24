@@ -114,30 +114,30 @@ module Puppet::Parser::Functions
             raise "Value '#{value}' does not match regex #{regex}" unless value =~ Regexp.compile(regex)
           end
 
-          if value.is_a?(Hash) or value.is_a?(Array)
+          if value.is_a?(Hash)
             final_settings.push "#{indent}#{directive}#{hash_separator}{" if directive
             value.each do |k, v|
               type_n = 'string_noquote'
               type_n = "#{type_n}_list" if v.is_a?(Array)
               # use same type again:
               type_n = type if v.is_a?(Hash)
-              if v.is_a?(Array)
+              if v.is_a?(Array) and directive
                 final_settings.push function_bareos_settings([[v, nil, type, false, indent]])
               else
                 final_settings.push function_bareos_settings([[v, k, type_n, false, "#{indent}  "]])
               end
             end
             final_settings.push "#{indent}}" if directive
-          #elsif value.is_a?(Array)
-          #  final_settings.push "#{indent}#{directive}#{hash_separator}{"
-          #  value.each do |item|
-          #    #type_n = type
-          #    #type_n = "#{type}_list" if item.is_a?(Array)
-          #    # use same type again:
-          #    #type_n = type if item.is_a?(Hash)
-          #    final_settings.push function_bareos_settings([[item, nil, type, false, indent]])
-          #  end
-          #  final_settings.push "#{indent}}"
+          elsif value.is_a?(Array) and directive
+            #final_settings.push "#{indent}#{directive}#{hash_separator}{"
+            value.each do |item|
+              #type_n = type
+              #type_n = "#{type}_list" if item.is_a?(Array)
+              # use same type again:
+              #type_n = type if item.is_a?(Hash)
+              final_settings.push function_bareos_settings([[item, nil, type, false, indent]])
+            end
+            #final_settings.push "#{indent}}"
           else
             if quote
               # value = value.gsub(/(")/, '\"')
